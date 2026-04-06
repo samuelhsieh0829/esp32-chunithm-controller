@@ -17,11 +17,9 @@ If you want to read English version [here](README.md)
 如果您喜歡CLI，那AI說可以直接打esp-idf的指令：
 
 ```bash
-
 idf.py set-target esp32s3
 
 idf.py build
-
 ```
 
 對Copilot說這樣可以就是可以，我對它非常的信任，因為它會幫我處理好依賴問題，我相信你各位一定不會有問題的對吧<br>對吧?
@@ -30,18 +28,14 @@ idf.py build
 
 我想大家都有gcc吧，執行這段指令：
 
-『`bash
-
+```bash
 $oldPath = $env:PATH; $env:PATH = 'C:\msys64\mingw32\bin;' + $oldPath; & 'C:\msys64\mingw32\bin\gcc.exe' -shared -O2 -Wall -Wextra -std=c11 -static. $code = $LASTEXITCODE; & 'C:\msys64\mingw32\bin\objdump.exe' -f .\chuniio\chuniio.dll | Out-String; Write-Output ('exit=' + $code); $env:PATH = $oldPath
-
 ```
 
 Hmmm也太長，感覺env很多餘?但我也不知道能不能改，或許大部分人執行這一行就好了?
 
-『`bash
-
+```bash
 'C:\msys64\mingw32\bin\gcc.exe' -shared -O2 -Wall -Wextra -std=c11 -static-libgcc -o .\chuniio\chuniio.dll .\chuniio\chuniio.c
-
 ```
 
 我不太確定這樣對不對，AI都是跑上面的那個，反正你們應該比我聰明，就是編譯個dll對各位大佬來說有什麼難的🛐 <br>
@@ -51,7 +45,6 @@ Hmmm也太長，感覺env很多餘?但我也不知道能不能改，或許大部
 現在來處理segatools.ini，修改以下設定：
 
 ```ini
-
 [chuniio]
 
 path={chuniio.dll的絕對路徑}
@@ -95,7 +88,6 @@ air6_threshold=4060 ; 痾但測試的程式被蓋掉了 你們加油
 [slider]
 ; 其實我不確定這要不要改，反正我這樣子用是ok的
 enable=1
-
 ```
 
 你說你沒有Chunithm HDD？ ~~也許你需要學習怎麼Google~~ 也許有一天我會讓它支援模擬器，但前提是我要知道有什麼模擬器，對我甚至不知道中二有沒有像maimai的AstroDX這種存在
@@ -128,14 +120,13 @@ enable=1
 ## 空中感測器
 接下來是AIR感測器，這部分AI真的拉完了，它說IR光電晶體管需要一個大約30k歐姆的電阻來組上拉電阻，每個IR LED需要100歐姆的電阻，但我測試發現，它們之間的距離需要**每個IR光電晶體管需要 1M 歐姆的電阻**，**每個IR LED需要33歐姆（可能更低）**才能穩定運作。簡單來說，照AI說的做會得到一個拍照永遠沒曝光的照片，你根本不知道是手遮住了鏡頭還是沒有燈光。回到電路，我們需要讓LED和電晶體位在同一直線上面對面，為了讓它們對齊，我的方法是先在一張紙上畫出每個點（在同一條斜直線上，每個點之間的距離大約3公分，跟鄉民們差不多😯），然後把另一張紙完整貼在另一面，將它們對齊並朝向光源，把第一張紙的點描到第二張，就可以描出鏡像的位置，也就是兩邊會是對齊的樣子。把它們貼到紙箱的兩面（這就是為什麼我用Costco的紙箱，這樣我就不用自己製作兩跟支架之類的了），用你螺絲起子或筆之類尖尖的東西(像你的下面一樣)鑽孔，然後把紅外線 LED 和晶體管放進去。
 
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313176862720/IMG_4658.jpg?ex=69d5562c&is =69d404ac&hm=bdba74dce1872f288973338fba80af40c6e47f5ffa7c2c398e0f7b819642d1d5&=&format=webp&width=558&height=74444 alt="紅外線感測器範例">
+<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313176862720/IMG_4658.jpg?ex=69d5562c&is=69d404ac&hm=bdba74dce1872f288973338fba80af40c6e47f5ffa7c2c398e0f7b819642d1d5&=&format=webp&width=558&height=744" alt="紅外線感測器範例">
 
 將所有GND(短腳)引腳焊接在一起，把兩側的IR LED的長腳分別焊接成一條線(共兩條)，然後每一個IR晶體管長腳焊上一條線。
 
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790312405237830/IMG_4657.jpg?ex=69d5562c&is=69d404ac&hm=a0ba65c66f2a662cc8ab3bee93c76199b77dae8cadd07ab5fb8ddfcad0c64eb3&=&format=webp&width=558&height=744" alt="紅外線感測器範例">
+<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790312405237830/IMG_4657.jpg?ex=69d5562c&is=69d404ac&hm=a0ba65c66f2a662cc8ab3bee93c76199b77dae8cadd07ab5fb8ddfcad0c64eb3&=&format=webp&width=558&height=744" alt="紅外線感測器接線範例">
 
 電路：
-
 ```
 5V----------------33Ω電阻--左側LED VCC
 
@@ -145,10 +136,11 @@ enable=1
 
     /     \                    |
 
-GPIO9~14 紅外線光電電晶體1~6---GND
-
+GPIO9~14 IR光電電晶體1~6---GND
 ```
-這麼抽象，我想你應該能理解吧？
+記得要把IR光電電晶體由下到上123456依序接GPIO9~14，不要變成135246
+
+這麼抽象，希望大家看得懂XD
 
 <img src="https://media.discordapp.net/attachments/1189565314736857180/1490790311667171560/IMG_4656.jpg?ex=69d5562b&is=69d404ab&hm=951be3fa71db2918001004d05f6fd1e41cc08842588b9bd90df51f094e8a20fd&=&format=webp&width=558&height=744" alt="所有電路">
 OwO 你成功製作了一個土炮版中二手台🥳

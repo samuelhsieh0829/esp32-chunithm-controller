@@ -96,6 +96,8 @@ Circuit:
    /        \                              |
 GPIO9~14  IR Phototransistor 1~6----------GND
 ```
+Remember that connect the IR phototransistor for low to high is 1 to 6, mapping to GPIO 9~14, don't do it wrong like 135246 or sth.
+
 So abstracting, I guess you'll understand right?
 <img src="https://media.discordapp.net/attachments/1189565314736857180/1490790311667171560/IMG_4656.jpg?ex=69d5562b&is=69d404ab&hm=951be3fa71db2918001004d05f6fd1e41cc08842588b9bd90df51f094e8a20fd&=&format=webp&width=558&height=744" alt="All circuit">
 OwO you just successfully make a chunithm controller🥳

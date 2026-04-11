@@ -16,7 +16,7 @@
 #define SENSOR_PACKET_CMD_REPORT 0x81
 
 #define SENSOR_PACKET_VERSION 0x01
-#define SENSOR_TOUCH_COUNT 8
+#define SENSOR_TOUCH_COUNT 16
 #define SENSOR_IR_COUNT 6
 #define SENSOR_SLIDER_CELLS 32
 
@@ -24,7 +24,7 @@
 	(4 + (SENSOR_TOUCH_COUNT * 2) + (SENSOR_IR_COUNT * 2))
 
 #define SENSOR_PACKET_MAX_PAYLOAD 124
-#define TOUCH_FORCE_RAW_THRESHOLD 1400
+#define TOUCH_FIRMWARE_MAX 255
 #define DEBUG_WINDOW_REFRESH_MS 50
 #define SENSOR_LINK_BAUD_RATE_DEFAULT 2000000
 #define SERIAL_READ_CHUNK_SIZE 256
@@ -439,14 +439,14 @@ static unsigned int __stdcall chuni_io_slider_thread_proc(void *ctx)
 
 		LeaveCriticalSection(&s_lock);
 
-		/* 8 sensors -> 32 slider cells, each sensor expanded to 4 cells */
+		/* 16 sensors -> 32 slider cells, each sensor expanded to 2 cells */
 		for (size_t i = 0; i < SENSOR_TOUCH_COUNT; i++) {
-			const size_t base = i * 4;
+			const size_t base = i * 2;
 			uint8_t value = pad_pressure[i];
 			if (s_cfg.touch_output_inverted) {
 				value = (uint8_t) (255u - value);
 			}
-			for (size_t j = 0; j < 4; j++) {
+			for (size_t j = 0; j < 2; j++) {
 				pressure[base + j] = value;
 			}
 		}
@@ -500,8 +500,8 @@ static unsigned int __stdcall chuni_io_debug_thread_proc(void *ctx)
 			}
 
 			for (size_t i = 0; i < SENSOR_TOUCH_COUNT; i++) {
-				const size_t base = i * 4;
-				for (size_t j = 0; j < 4; j++) {
+				const size_t base = i * 2;
+				for (size_t j = 0; j < 2; j++) {
 					cell_out[base + j] = pad_out[i];
 				}
 			}
@@ -516,22 +516,21 @@ static unsigned int __stdcall chuni_io_debug_thread_proc(void *ctx)
 		}
 
 		printf("chuniio sensor debug window\n");
-		printf("fresh=%s seq=%u raw_threshold=%u output_inverted=%u\n",
+		printf("fresh=%s seq=%u output_inverted=%u\n",
 			fresh ? "yes" : "no",
 			(unsigned int) seq,
-			(unsigned int) TOUCH_FORCE_RAW_THRESHOLD,
 			s_cfg.touch_output_inverted ? 1u : 0u);
 		printf("serial_active_baud=%u auto_baud=%u\n",
 			(unsigned int) InterlockedCompareExchange(&s_serial_active_baud, 0, 0),
 			s_cfg.auto_baud ? 1u : 0u);
 
-		printf("touch_raw[8]         : ");
+		printf("touch_raw[16]        : ");
 		for (size_t i = 0; i < SENSOR_TOUCH_COUNT; i++) {
 			printf("%5u ", (unsigned int) raw[i]);
 		}
 		printf("\n");
 
-		printf("touch_to_game_pad[8] : ");
+		printf("touch_to_game_pad[16]: ");
 		for (size_t i = 0; i < SENSOR_TOUCH_COUNT; i++) {
 			printf("%3u ", (unsigned int) pad_out[i]);
 		}
@@ -785,13 +784,6 @@ static void chuni_io_handle_sensor_report_locked(const uint8_t *payload, size_t 
 		const uint16_t raw = (uint16_t) payload[cursor] | ((uint16_t) payload[cursor + 1] << 8);
 		cursor += 2;
 
-		// Firmware uses 0 for failed touch reads; ignore that sample to avoid false triggers.
-		if (raw == 0) {
-			s_sensor.touch_press_count[i] = 0;
-			s_sensor.touch_release_count[i] = 0;
-			continue;
-		}
-
 		s_sensor.touch_raw[i] = raw;
 
 		if (!s_sensor.touch_baseline_valid[i]) {
@@ -879,41 +871,16 @@ static bool chuni_io_sensor_is_fresh_locked(uint64_t now_ms)
 
 static uint8_t chuni_io_touch_to_pressure_locked(size_t index)
 {
-	if (index >= SENSOR_TOUCH_COUNT || !s_sensor.touch_baseline_valid[index]) {
+	if (index >= SENSOR_TOUCH_COUNT) {
 		return 0;
 	}
 
-	const uint16_t raw = s_sensor.touch_raw[index];
-
-	// Temporary hardcoded mapping requested by user:
-	// raw < 4000 => 0, raw >= 4000 => 255
-	if (raw < TOUCH_FORCE_RAW_THRESHOLD) {
-		return 0;
+	uint16_t raw = s_sensor.touch_raw[index];
+	if (raw > TOUCH_FIRMWARE_MAX) {
+		raw = TOUCH_FIRMWARE_MAX;
 	}
 
-	return 255;
-
-	/*
-	const uint16_t baseline = s_sensor.touch_baseline[index];
-	const uint16_t delta_u16 = chuni_io_touch_abs_delta_u16(raw, baseline);
-	const uint16_t off_threshold = chuni_io_touch_compute_off_threshold_locked(index);
-
-	if (!s_sensor.touch_active[index]) {
-		return 0;
-	}
-
-	int32_t pressure = ((int32_t) delta_u16 - (int32_t) off_threshold)
-		* (int32_t) s_cfg.touch_scale;
-	if (pressure <= 0) {
-		pressure = 1;
-	}
-
-	if (pressure > 255) {
-		pressure = 255;
-	}
-
-	return (uint8_t) pressure;
-	*/
+	return (uint8_t) raw;
 }
 
 static bool chuni_io_ir_is_blocked_locked(size_t index)

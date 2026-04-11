@@ -1,5 +1,5 @@
 # ESP32 Penguin Controller
-An 8 keys chunithm controller using ESP32-S3
+A 16 keys chunithm controller using ESP32-S3 <br>
 如果你想看中文版 [這裡](README-TW.md)
 
 # Software Part

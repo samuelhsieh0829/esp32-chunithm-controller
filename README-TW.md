@@ -1,5 +1,5 @@
 # ESP32 企鵝控制器
-一款基於 ESP32-S3 的8鍵中二手台
+一款基於 ESP32-S3 的16鍵中二手台 <br>
 If you want to read English version [here](README.md)
 
 # 軟體部分

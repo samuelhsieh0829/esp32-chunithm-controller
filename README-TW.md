@@ -118,7 +118,7 @@ enable=1
 ## 觸控感測器
 先把銅箔膠帶貼在壓克力或紙板上，做成一條長方形（我自己是34cm\*9cm，對應23吋1080P螢幕；官機大概45cm\*10cm，約32吋螢幕尺寸）。再用美工刀切成 ~~8~~16 塊彼此不導通的區域，然後每一塊焊一條導線：
 
-<img src="https://cdn.discordapp.com/attachments/1189565314736857180/1490790310685577226/IMG_4655.jpg?ex=69d5562b&is=69d404ab&hm=aa68dc379b73889ae7f3f0586caeae84d4a6889934ce25d66b62abc5c3beec97&" alt="觸控感應器範例">
+<img src="./assets/IMG_4655.jpg" alt="觸控感應器範例">
 
 ~~你可以看到我以前每塊焊兩條線，是為了之後從8鍵切成16鍵，當時每塊只有一條真的在用。~~ <br>
 焊好之後可以再貼一層霧面膠帶，摸起來會比較滑，類似霧面手機膜的觸感，這樣就不用戴手套打ㄌ <br>
@@ -146,16 +146,16 @@ ESP32---3V3(3.3V), GND to VCC, GND (這個應該不用畫吧)
 對那個星星是傳送門 應該看得懂吧
 ```
 
-<img src="https://cdn.discordapp.com/attachments/1189565314736857180/1492603980772147463/IMG_4786.jpg?ex=69dbef48&is=69da9dc8&hm=da6ad1d8a9e3d2b0b54d1e3cd794a26374cfdc3ffa2992bc9ac1cc70ff9d2948&" alt="觸控感測器接線範例">
+<img src="./assets/IMG_4786.jpg" alt="觸控感測器接線範例">
 
 ## 空中感測器
 接下來是AIR感測器，這部分AI真的拉完了，它說IR光電晶體管需要一個大約30k歐姆的電阻來組上拉電阻，每個IR LED需要100歐姆的電阻，但我測試發現，它們之間的距離需要**每個IR光電晶體管需要 1M 歐姆的電阻**，**每個IR LED需要33歐姆（可能更低）**才能穩定運作。簡單來說，照AI說的做會得到一個拍照永遠沒曝光的照片，你根本不知道是手遮住了鏡頭還是沒有燈光。回到電路，我們需要讓LED和電晶體位在同一直線上面對面，為了讓它們對齊，我的方法是先在一張紙上畫出每個點（在同一條斜直線上，每個點之間的距離大約3公分，跟鄉民們差不多😯），然後把另一張紙完整貼在另一面，將它們對齊並朝向光源，把第一張紙的點描到第二張，就可以描出鏡像的位置，也就是兩邊會是對齊的樣子。把它們貼到紙箱的兩面（這就是為什麼我用Costco的紙箱，這樣我就不用自己製作兩跟支架之類的了），用你螺絲起子或筆之類尖尖的東西(像你的下面一樣)鑽孔，然後把紅外線 LED 和晶體管放進去。
 
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313176862720/IMG_4658.jpg?ex=69d5562c&is=69d404ac&hm=bdba74dce1872f288973338fba80af40c6e47f5ffa7c2c398e0f7b819642d1d5&=&format=webp&width=558&height=744" alt="紅外線感測器範例">
+<img src="./assets/IMG_4658.jpg" alt="紅外線感測器範例">
 
 將所有GND(短腳)引腳焊接在一起，把兩側的IR LED的長腳分別焊接成一條線(共兩條)，然後每一個IR晶體管長腳焊上一條線。
 
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790312405237830/IMG_4657.jpg?ex=69d5562c&is=69d404ac&hm=a0ba65c66f2a662cc8ab3bee93c76199b77dae8cadd07ab5fb8ddfcad0c64eb3&=&format=webp&width=558&height=744" alt="紅外線感測器接線範例">
+<img src="./assets/IMG_4657.jpg" alt="紅外線感測器接線範例">
 
 電路：
 ```
@@ -173,11 +173,23 @@ GPIO9~14 IR光電電晶體1~6---GND
 
 這麼抽象，希望大家看得懂XD
 
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790311667171560/IMG_4656.jpg?ex=69d5562b&is=69d404ab&hm=951be3fa71db2918001004d05f6fd1e41cc08842588b9bd90df51f094e8a20fd&=&format=webp&width=558&height=744" alt="所有電路">
+<img src="./assets/IMG_4656.jpg" alt="所有電路">
 OwO 你成功製作了一個土炮版中二手台🥳
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313814524046/IMG_4659.jpg?ex=69d5562c&is=69d404ac&hm=3f97148cfa5e8bbc0112aef8525c5fd33e02fc5dbd831ac9d5ce72b406492a51&=&format=webp&width=558&height=744" alt="成品">
+<img src="./assets/IMG_4659.jpg" alt="成品">
 
 最後，我自己錄了個示範影片兼S手元，打的是ラヴィ(Lavie)紫譜13，有98萬分，算是證明了這個土炮的東西有用(?，有興趣的話去看一下順便給我個讚:D 謝啦 [link](https://www.instagram.com/reel/DW_hd89kaQa/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==)
+
+# 已知問題
+經過我幾天的遊玩下來，總結了一些我自己組出來有出現的問題:
+
+首先觸控面板很常會出現被空氣按下或是斷觸的情況，GPT的說法是因為我接線太常導致電位的不穩定，那樣太長的線會變成一種天線(?) 總之如果你現在正在組裝，趁現在還來的及，盡可能讓mpr121跟觸控面板之間的線不要太長
+
+GPT其實有給我兩種補救方式，一個是在面板背面接地(在我那片黑黑的底下貼一片銅箔膠帶然後連GND)，另一個是在mpr121跟面板的線之間連電阻，但我這裡測試都沒用:/
+
+再來是有機率會發生其中一個mpr121連接的所有感測器沒有反應，這應該是啟動電壓不穩導致I2C不正常(應該?)，反正如果可以的話在mpr121的VCC跟GND上接個電容應該就好了
+
+或者是，按下ESP32上的RST鍵，多按幾次到它正常就行😯(反正我就是這樣用:D)
+
 # 參考資料
 謝謝各位前輩大佬們留下的資源🛐⚡
 https://github.com/Yona-W/OpeNITHM

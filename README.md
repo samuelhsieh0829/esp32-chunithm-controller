@@ -86,7 +86,7 @@ So the component I use is here:
 |Paper|2|
 
 Paste your copper tape on a surface like acrylic or cardboard in the shape of rectangle (about 34cm\*9cm for my 23 inch 1080P monitor or 45cm\*10cm to fit the official size, about a 32 inch monitor), use a knife to split them into ~~8~~16 indepandent pieces not conducting each others, and then solder each pieces of them to wires:
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1492596740581359696/IMG_4785.jpg?ex=69dbe88a&is=69da970a&hm=d266a506f101d4faf348933f069d8de7033b8398fbac5b75a9a0e474d2b36dbc&=&format=webp&width=675&height=900" alt="Touch sensor example">
+<img src="./assets/IMG_4785.jpg" alt="Touch sensor example">
 ~~As you can see, I soldered two wires to each one parts, it is for the future to cut them into 16 parts, every part only has one wire working now. After that, wire these 8 wires to the GPIO 1 to 8 from left to right.~~ <br>
 After that, you can paste a second layer of matte tape for better touch feeling(as smooth as you wear gloves, just like that) <br>
 And then connect these wires to two mpr121s (if you want to make 32k then your wiring may be different, and it would also have to change some code, so you don't need to follow my instruction, just make yourself a fork for this), but before doing so, you need to cut one of mpr121's addr grounded connection, it is for its I2C address, flip it to its back side and use a knife to cut of the string inside the PCB, and the cut one should short addr(ADD) pin and sda pin. Ok now we have two mpr121, we call **the one who didn't cut** "mpr121-1", and the **one short to sda** "mpr121-2", wire the touch panel, from left to right is "mpr121-1"s 0~11 and "mpr121-2"s 0~3, both SDA connect to ESP32 GPIO7, both SCL connect to ESP32 GPIO8, and here is a very ugly graph:
@@ -104,11 +104,11 @@ ESP32---3V3(3.3V), GND to VCC, GND (I don't need to draw it right?)
         IIIIIIIIIIIIIIII
 
 ```
-<img src="https://cdn.discordapp.com/attachments/1189565314736857180/1492603980772147463/IMG_4786.jpg?ex=69dbef48&is=69da9dc8&hm=da6ad1d8a9e3d2b0b54d1e3cd794a26374cfdc3ffa2992bc9ac1cc70ff9d2948&" alt="Touch sensor wiring example">
+<img src="./assets/IMG_4786.jpg" alt="Touch sensor wiring example">
 Next up is AIR sersor, this part I really hate AI, it says IR phototransistor requires about 30k ohm resistor to make the pull-up resistor circuit, and 100 ohm for each IR LED, but as I test, the distance of those requires **1M ohm each for IR phototransistor** and **33 ohm for IR LED (maybe less)** to make it possible to stably work, in simple words, AI provides a value that IR LED is too weak to let transistor even know it exists, and it acts like your hands is constantly on the air. So back to circuit, we need to let LEDs and transistors face to face(?, I mean they have to almost be in a same line, my method is to draw each point (in a same line, each distance about 3cm, just like yours😯) at a paper, and then cover the other side with another paper (to draw mirrored), align them and face to light, copy it, Done. Now paste it on both sides of your 3D cardboard box (that's why I use Costco box, I don't need to build a standing thing myself), use something to drill holes and put IR LEDs and transistors into these.
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313176862720/IMG_4658.jpg?ex=69d5562c&is=69d404ac&hm=bdba74dce1872f288973338fba80af40c6e47f5ffa7c2c398e0f7b819642d1d5&=&format=webp&width=558&height=744" alt="IR sensor example">
+<img src="./assets/IMG_4658.jpg" alt="IR sensor example">
 Solder all GND Pins all together, one vcc on LEDs for one side, one wire for one IR transistor
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790312405237830/IMG_4657.jpg?ex=69d5562c&is=69d404ac&hm=a0ba65c66f2a662cc8ab3bee93c76199b77dae8cadd07ab5fb8ddfcad0c64eb3&=&format=webp&width=558&height=744" alt="IR sensor example">
+<img src="./assets/IMG_4657.jpg" alt="IR sensor example">
 Circuit:
 ```
 5V----------------33 resistor--Left side LED VCC
@@ -120,11 +120,21 @@ GPIO9~14  IR Phototransistor 1~6----------GND
 Remember that connect the IR phototransistor for low to high is 1 to 6, mapping to GPIO 9~14, don't do it wrong like 135246 or sth.
 
 So abstracting, I guess you'll understand right?
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790311667171560/IMG_4656.jpg?ex=69d5562b&is=69d404ab&hm=951be3fa71db2918001004d05f6fd1e41cc08842588b9bd90df51f094e8a20fd&=&format=webp&width=558&height=744" alt="All circuit">
+<img src="./assets/IMG_4656.jpg" alt="All circuit">
 OwO you just successfully make a chunithm controller🥳
-<img src="https://media.discordapp.net/attachments/1189565314736857180/1490790313814524046/IMG_4659.jpg?ex=69d5562c&is=69d404ac&hm=3f97148cfa5e8bbc0112aef8525c5fd33e02fc5dbd831ac9d5ce72b406492a51&=&format=webp&width=558&height=744" alt="Finished Product">
+<img src="./assets/IMG_4659.jpg" alt="Finished Product">
 
 Also I have a video for showing this working, feel free to like it :D [link](https://www.instagram.com/reel/DW_hd89kaQa/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==)
+
+# Known Issue
+So after days of playing, I realize some problem of the current design.
+The biggest problem is that: Touch sensor sometimes bugged, ghost key and not responding happens a lot, GPT says its wire is too long, I may act like a mast(?), so if you see this, make sure the touch pannel's wire as close to mpr121 as possible.
+
+Although it says it can be solved by adding ground to the pannel's back or adding resistor between wire and mpr121, they just don't work T_T
+
+And the second issue is a part of mpr121's touch block may not work, it may caused by the unstable current from ESP32, and impact the I2C register of two mpr121s, so maybe add capacitors on mpr121's VCC and GND.
+
+Or just keep clicking the RST button on ESP32 until it works XD (yeah thats how I solve all the issues)
 
 # Resource references
 https://github.com/Yona-W/OpeNITHM
